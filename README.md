@@ -6,7 +6,7 @@ To investigate early adaptive changes to short-term HFD, we fed eleven-week-old 
 
 To capture the early genomic changes within islets of Langerhans following short-term HFD exposure, we utilized a single-nucleus method known as chromium single-cell multiome ATAC + Gene expression from 10X Genomics (snMultiome) using nuclei from isolated islets. snMultiome enables simultaneous capture of gene expression data and chromatin accessibility data from the same single nuclei through RNA-sequencing (snRNA-seq) and transposase-accessible chromatin with sequencing (snATAC-seq), respectively.
 
-![Illustration of work]()
+![Illustration of work](https://github.com/Isabellvse/phenotyping_multiome/blob/main/illustrations/github_image.png)
 
 ###### *A) Schematic overview of the experimental setup: 8-week-old male C57BL/6JBomTac mice underwent a three-week acclimatization period during which they were fed a low-fat-diet (LFD). Subsequently, mice were divided into groups receiving either LFD (orange, as a control) or high-fat-diet (blue, HFD) for one or three weeks.* 
 ###### *B) Macronutrient composition of LFD (7 % energy from sucrose 10 % energy from fat) and HFD (7 % energy from sucrose, 60 % energy from fat) presented in % Kcal.* Following one or three weeks of diet the metabolic phenotype of these mice was characterized on several parameters
