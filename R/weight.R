@@ -184,10 +184,12 @@ weight <- weight_gain_long %>%
                       y = "weight_gain",
                       fill = "Diet",
                       color = "Diet",
-                      add = "jitter",
                       size = 0.5,
+                      outlier.shape = NA,
+                      add.params = list(size = 0.3),
+                      add = "point",
                       palette = diet_color,
-                      lwd = 1,
+                      lwd = 0.46,
                       fatten = 0.5,
                       title = "Weight gain") +
     ggplot2::scale_color_manual(values = c("black", "black")) +
@@ -196,11 +198,7 @@ weight <- weight_gain_long %>%
         y = "% change from start weight (week 0)",
         x = "Weeks on diet",
         fill = "Diet") +
-    ggplot2::geom_text(
-        data = stats_filter,
-        aes(x = x, y = y.position + 5, label = paste("n =", n1, ", n =", n2)),
-        size = 3) +
-    ggpubr::stat_pvalue_manual(stats_filter,  label = "p.signif", bracket.size = 1, size = 5) +
+    ggpubr::stat_pvalue_manual(stats_filter,  label = "p.signif", remove.bracket = TRUE, size = 1) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
                          base_fontface = "plain") +
@@ -209,3 +207,84 @@ weight <- weight_gain_long %>%
 print(weight)
 dev.off()
 
+
+# Seq samples weight gain -------------------------------------------------
+highlight_ids <- c("SMA-3344", "SMA-3345", "SMA-4671",
+              "SMA-4662", "SMA-4663", "SMA-4811",
+              "SMA-4814")
+
+df <- data_1 |>
+    dplyr::group_by(Diet) |>
+    dplyr::mutate(
+        mean_weight = median(`0`, na.rm = TRUE),
+        dplyr::across(
+            .cols = c(`1`, `2`, `3`, `5`, `6`),
+            .fns = ~ ifelse(is.na(mean_weight) |
+                                is.na(.), NA, ((. - mean_weight) / mean_weight) * 100),
+            .names = "week_{.col}"
+        )
+    ) |>
+    dplyr::select(week_1, week_3, ID, Diet)
+
+df_long <- df |>
+    tidyr::pivot_longer(cols = c(-ID, -Diet),
+                        names_to = "week",
+                        values_to = "weight_gain") |>
+    dplyr::mutate(
+        week = as.character(stringr::str_remove(week, "week_")),
+        highlight = ifelse(ID %in% highlight_ids, "highlight", "normal")
+    )
+
+
+p <- df_long |> ggpubr::ggboxplot(x = "week",
+                  y = "weight_gain",
+                  fill = "Diet",
+                  color = "Diet",
+                  size = 3,
+                  outlier.shape = NA,
+                  add.params = list(size = 3),
+                  add = "point",
+                  palette = diet_color,
+                  lwd = 0.46,
+                  fatten = 0.5,
+                  title = "Weight gain") +
+    ggplot2::scale_color_manual(values = c("black", "black")) +
+    ggplot2::labs(
+        y = "% change from start weight (week 0)",
+        x = "Weeks on diet",
+        fill = "Diet") +
+    ggplot2::theme(legend.position = "top") +
+    ggplot2::coord_cartesian(clip = "off")
+
+highlight_data <- df_long %>% filter(ID %in% highlight_ids)
+dodge_width <- 0.75  # default ggboxplot dodge width
+p + geom_point(
+    data = df_long %>% filter(ID %in% highlight_ids),
+    aes(x = week, y = weight_gain, fill = Diet),
+    shape = 21,
+    color = "black",
+    size = 3,
+    position = position_dodge(width = dodge_width)
+) +
+    geom_text(
+    data = highlight_data,
+    aes(x = week, y = weight_gain, label = ID),
+    size = 3,
+    vjust = -1,  # places label above the point
+    position = position_dodge(width = dodge_width)
+)
+
+ggplot(df_long, aes(x = week, y = weight_gain, fill = Diet)) +
+    geom_boxplot(outlier.shape = NA, color = "black", size = 0.5, width = 0.6) +
+    geom_point(aes(color = highlight),
+               size = 1.2) +
+    scale_fill_manual(values = diet_color) +
+    scale_color_manual(values = c("normal" = "black", "highlight" = "red")) +
+    expand_limits(y = 0) +
+    labs(
+        y = "% change from start weight (week 0)",
+        x = "Weeks on diet",
+        fill = "Diet"
+    ) +
+    theme(legend.position = "top") +
+    coord_cartesian(clip = "off")
