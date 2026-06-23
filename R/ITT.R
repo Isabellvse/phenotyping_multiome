@@ -90,14 +90,15 @@ n_obs <- stats %>%
 pdf(here::here("data/insulin_tolerance_test_bg.pdf"),
     width = 11,
     height = 7)
-ggpubr::ggline(itt_long,
+itt_raw <- ggpubr::ggline(itt_long,
                x = "time",
                y = "bg",
                color = "Diet",
                add =  c("mean_sd"),
                facet.by = "week",
                ncol = 4,
-               size = 1,
+               point.size = NA,
+               size = 0.2,
                palette = diet_color,
                title = "itt - raw",
                ylab = "Blood Glucose (mmol / L)",
@@ -106,19 +107,13 @@ ggpubr::ggline(itt_long,
                                x = "x",
                                label = "p.signif",
                                remove.bracket = TRUE,
-                               size = 5) +
-    ggplot2::geom_jitter(data = itt_long,
+                               size = 1) +
+    ggplot2::geom_point(data = itt_long,
                          aes(x = time,
                              y = bg,
                              color = Diet),
-                         width = 0.1,
+                         size= 0.3,
                          alpha = 0.5) +
-    ggplot2::geom_text(
-        data = n_obs,
-        aes(x = Inf, y = Inf, label = paste("n(LFD) =", n1, ", n(HFD) =", n2)),
-        size = 3,
-        vjust = 2,
-        hjust = 1.05) +
     ggplot2::scale_y_continuous(breaks = seq(0, 15, by = 2)) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
@@ -176,7 +171,8 @@ itt_perc <- ggpubr::ggline(itt_perc_long,
                add =  c("mean_sd"),
                facet.by = "week",
                ncol = 4,
-               size = 1,
+               point.size = NA,
+               size = 0.2,
                palette = diet_color,
                title = "itt - normalized",
                ylab = "% Change in blood glucose from baseline (T = 0)",
@@ -185,19 +181,13 @@ itt_perc <- ggpubr::ggline(itt_perc_long,
                                x = "x",
                                label = "p.signif",
                                remove.bracket = TRUE,
-                               size = 5) +
-    ggplot2::geom_jitter(data = itt_perc_long,
+                               size = 1) +
+    ggplot2::geom_point(data = itt_perc_long,
                          aes(x = time,
                              y = bg,
                              color = Diet),
-                         width = 0.1,
+                         size = 0.3,
                          alpha = 0.5) +
-    ggplot2::geom_text(
-        data = n_obs,
-        aes(x = Inf, y = Inf, label = paste("n(LFD) =", n1, ", n(HFD) =", n2)),
-        size = 3,
-        vjust = 2,
-        hjust = 1.05) +
     ggplot2::scale_y_continuous(breaks = seq(-80, 100, by = 20)) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
@@ -322,10 +312,12 @@ itt_auc_perc <- itt_perc_auc %>% dplyr::filter(week %in% c(1, 3)) %>%
                       y = "auc",
                       fill = "Diet",
                       color = "Diet",
-                      add = "jitter",
                       size = 0.5,
+                      outlier.shape = NA,
+                      add.params = list(size = 0.3),
+                      add = "point",
                       palette = diet_color,
-                      lwd = 1,
+                      lwd = 0.5,
                       fatten = 0.5,
                       title = "itt - Normalized",
                       ylab = "Area under the Curve",
@@ -335,7 +327,7 @@ itt_auc_perc <- itt_perc_auc %>% dplyr::filter(week %in% c(1, 3)) %>%
                                x = "x",
                                label = "p.signif",
                                remove.bracket = TRUE,
-                               size = 5) +
+                               size = 2) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
                          base_fontface = "plain") +
