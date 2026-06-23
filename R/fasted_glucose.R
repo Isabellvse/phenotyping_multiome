@@ -131,16 +131,19 @@ stats_time <- fasted_bg %>%
 pdf(here::here("data/fasted_blood_glucose_boxplot_1_and_3.pdf"),
     width = 5,
     height = 9,18)
+
 glucose <- fasted_bg %>%
     dplyr::filter(week %in% c("1", "3")) %>%
     ggpubr::ggboxplot(x = "week",
                       y = "bg",
                       fill = "Diet",
                       color = "Diet",
-                      add = "jitter",
+                      add = "point",
+                      outlier.shape = NA,
+                      add.params = list(size = 0.3),
                       size = 0.5,
                       palette = diet_color,
-                      lwd = 1,
+                      lwd = 0.46,
                       fatten = 0.5,
                       title = "Fasted glucose") +
     ggplot2::scale_color_manual(values = c("black", "black")) +
@@ -150,12 +153,8 @@ glucose <- fasted_bg %>%
         fill = "Diet") +
     ggplot2::scale_y_continuous(breaks = seq(0, 13, by = 2)) +
     ggplot2::expand_limits(y = 0) +
-    ggplot2::geom_text(
-        data = stats,
-        aes(x = x, y = y.position + 0.5, label = paste("n =", n1, ", n =", n2)),
-        size = 3) +
-    ggpubr::stat_pvalue_manual(stats,  label = "p.signif", bracket.size = 1, size = 5) +
-    ggpubr::stat_pvalue_manual(stats_time,  label = "p.signif", bracket.size = 1, size = 5) +
+    ggpubr::stat_pvalue_manual(stats,  label = "p.signif", bracket.size = 0, size = 1) +
+    ggpubr::stat_pvalue_manual(stats_time,  label = "p.signif", bracket.size = 0, size = 1) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
                          base_fontface = "plain") +
