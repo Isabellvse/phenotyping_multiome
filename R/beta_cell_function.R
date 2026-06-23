@@ -140,8 +140,6 @@ ins_final <- dplyr::bind_rows(list(ins_1,
     dplyr::mutate(Diet = factor(Diet, levels = c("LFD", "HFD")),
                   week = as.numeric(week))
 
-rstatix::identify_outliers(ins_final)
-
 ## Statistic test ----
 # Is there any significant difference between LFD and HFD median fasted serum insulin levels?
 stats <- ins_final %>%
@@ -170,10 +168,12 @@ insulin <- ins_final %>%
                       y = "insulin",
                       fill = "Diet",
                       color = "Diet",
-                      add = "jitter",
+                      add = "point",
+                      outlier.shape = NA,
+                      add.params = list(size = 0.3),
                       size = 0.5,
                       palette = diet_color,
-                      lwd = 1,
+                      lwd = 0.46,
                       fatten = 0.5,
                       title = "Fasted insulin") +
     ggplot2::scale_color_manual(values = c("black", "black")) +
@@ -183,11 +183,7 @@ insulin <- ins_final %>%
         fill = "Diet") +
     ggplot2::scale_y_continuous(breaks = seq(0, 6, by = 1)) +
     ggplot2::expand_limits(y = 0) +
-    ggplot2::geom_text(
-        data = stats,
-        aes(x = x, y = y.position + 1, label = paste("n =", n1, ", n =", n2)),
-        size = 3) +
-    ggpubr::stat_pvalue_manual(stats,  label = "p.signif", bracket.size = 1, size = 5) +
+    ggpubr::stat_pvalue_manual(stats,  label = "p.signif", remove.bracket = TRUE, size = 1) +
     ggprism::theme_prism(border = TRUE,
                          base_size = 15,
                          base_fontface = "plain") +
@@ -236,6 +232,7 @@ conv_insulin_pmol <- function(x){
     output <- ((((x*1000*1000)/5808)*1e12)/1e12)
     return(output)
 }
+
 
 # Calcualte homa-IR and beta -----------------------------------------------
 # when calculating homa_beta_percent, we will say that if bg-3.5 is below 0.1, the value will bet set to 0.1
@@ -289,7 +286,7 @@ spina_gr <- df %>%
     tidyr::drop_na() %>%
     ggplot2::ggplot(aes(x = week, y = value, fill = Diet)) +
     ggplot2::geom_boxplot(outlier.shape = NA) +
-    ggplot2::geom_point(position=position_dodge(width=0.75)) +
+    ggplot2::geom_point(position=position_dodge(width=0.75), size = 0.5) +
     ggplot2::scale_fill_manual(values = diet_color) +
     ggplot2::expand_limits(y = 0) +
     ggplot2::labs(title = "Insulin receptor gain",
@@ -310,7 +307,7 @@ spina_gbeta <- df %>%
     tidyr::drop_na() %>%
     ggplot2::ggplot(aes(x = week, y = value, fill = Diet)) +
     ggplot2::geom_boxplot(outlier.shape = NA) +
-    ggplot2::geom_point(position=position_dodge(width=0.75)) +
+    ggplot2::geom_point(position=position_dodge(width=0.75), size = 0.5) +
     ggplot2::scale_fill_manual(values = diet_color) +
     ggplot2::expand_limits(y = 0) +
     ggplot2::labs(title = "Secretory capacity",
