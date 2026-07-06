@@ -35,7 +35,7 @@ weight_gain <- data_1 %>%
 
 ## to save
 weight_gain_save <- weight_gain
-colnames(weight_gain_save) <- c("ID", "Cohort", "Diet", "Week 0", "Week 1", "Week 2", "Week 3", "Week 5", "Week 6", "Weight gain wk 1", "Weight gain wk 3",
+colnames(weight_gain_save) <- c("ID", "Cohort", "Diet", "Week 0", "Week 1", "Week 2", "Week 3", "Week 5", "Week 6", "Weight gain wk 1", "Weight gain wk 2",
                            "Weight gain wk 3", "Weight gain wk 5", "Weight gain wk 6")
 
 openxlsx::write.xlsx(weight_gain_save, here::here("data/documents/weight.xlsx"))
