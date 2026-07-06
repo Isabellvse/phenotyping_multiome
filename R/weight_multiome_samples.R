@@ -76,7 +76,7 @@ p1 <- df_2 |>
 
 p2 <- df_2 |>
     ggplot(aes(x = time_2, y = weight)) +
-    geom_boxplot(outlier.shape = TRUE) +
+    geom_boxplot(outlier.shape = NA) +
     geom_point(aes(color = colors_outlier), size = 0.5) +
     ggtitle("Weight") +
     geom_text(aes(label=ifelse(colors == "multiome",as.character(ID),'')),
@@ -84,13 +84,30 @@ p2 <- df_2 |>
     facet_wrap(~ Diet) +
     theme_classic(base_size = 7)
 
-pdf(here::here("data/weight_outlier.pdf"), width = 4, height = 2)
+
+# Save --------------------------------------------------------------------
+pdf(here::here("data/weight_outlier.pdf"), width = 4, height = 2.3)
 p1 + p2 + patchwork::plot_layout(guides = "collect")
 dev.off()
+vroom::vroom_write(outliers, here::here("data/outliers_weight.csv"))
 
 
-|> Q3 <- quantile(df$wg_3, 0.75, na.rm = TRUE)
-Q1 <- quantile(df$wg_3, 0.25, na.rm = TRUE)
-.IQR <- IQR(df$wg_3, na.rm = TRUE)
-upper.limit <- Q3 + (1.5 * .IQR)
-lower.limit <- Q1 - (1.5 * .IQR)
+# save weight and weight gain for imaging mice ----------------------------
+rev <- readxl::read_xlsx(path = here::here("data-raw/revisions_staining.xlsx"),
+                         col_names = TRUE) |>
+    dplyr::rename(`0` = `Weight (g) 19/8`,
+                  `3` = `Weight (g) 9/9`)
+
+rev_weight <- rev |>
+    dplyr::left_join(
+        df_2 |>
+            dplyr::filter(ID %in% rev$ID) |>
+            dplyr::select(ID, time, weight_gain) |>
+            dplyr::distinct() |>
+            tidyr::pivot_wider(names_from = time, values_from = weight_gain) |>
+            dplyr::select(-wg_1)
+    )
+
+openxlsx::write.xlsx(rev_weight, here::here("data/weight_revisions.xlsx"))
+
+
