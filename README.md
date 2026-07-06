@@ -26,6 +26,7 @@ The following folders contain:
     -   `ITT.R`: Analysis of Intraperitoneal insulin tolerance test
     -   `fasted_glucose.R`: Fasted blood glucose levels.
     -   `beta_cell_function.R`: Quantification of insulin levels and beta-cell function
+    -   `weight_multiome_samples.R`: Check if multiome or revisions samples are outliers based on weight gain
 
 #### Other scripts
 
